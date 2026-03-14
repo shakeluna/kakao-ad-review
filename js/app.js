@@ -91,6 +91,9 @@ function goNext() {
 }
 
 function goPrev() {
+  if (AppState.currentVerdict) {
+    if (!Review.saveCurrentVerdict()) return;
+  }
   if (AppState.currentIndex > 0) {
     goTo(AppState.currentIndex - 1);
   }
