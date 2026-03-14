@@ -42,26 +42,8 @@ const Review = (() => {
   const AUTO_SAVE_DELAY = 1000;
 
   function startAutoSaveTimer() {
-    clearAutoSaveTimer();
-    if (!AppState.selectedImageReason && !AppState.selectedVerticalReason) return;
-    // Show countdown bar
-    let bar = document.getElementById('auto-save-bar');
-    if (!bar) {
-      bar = document.createElement('div');
-      bar.id = 'auto-save-bar';
-      document.getElementById('reason-panel').appendChild(bar);
-    }
-    bar.style.animation = 'none';
-    void bar.offsetWidth; // reflow
-    bar.style.animation = '';
-
-    autoSaveTimer = setTimeout(() => {
-      autoSaveTimer = null;
-      removeAutoSaveBar();
-      if (AppState.currentVerdict) {
-        confirmReason();
-      }
-    }, AUTO_SAVE_DELAY);
+    // 자동 저장 타이머 비활성화 — 수동 저장(Enter/→/Space)만 사용
+    return;
   }
 
   function clearAutoSaveTimer() {
