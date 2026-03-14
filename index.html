@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Creative Review Tool</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/niceplugin/Spoqa-Han-Sans@main/css/SpoqaHanSansNeo-kr.css">
+<link rel="stylesheet" href="css/bizboard.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/review.css">
+<style>
+  /* Sync status indicator */
+  .sync-status {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: 500;
+  }
+  .sync-connected { background: #e6f4ea; color: #1e7e34; }
+  .sync-disconnected { background: #fce8e6; color: #c62828; }
+  .sync-syncing { background: #fff3e0; color: #e65100; }
+  .queue-badge {
+    display: none;
+    background: #ff9800;
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+    font-weight: 600;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-icon {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+  }
+  .btn-icon:hover { background: #f0f0f0; }
+</style>
+</head>
+<body>
+
+<!-- Language Selection Modal (first visit) -->
+<div class="modal-overlay" id="lang-modal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">언어 선택 / Select Language</div>
+    <div class="lang-options">
+      <button class="btn-lang" id="lang-select-ko">한국어</button>
+      <button class="btn-lang" id="lang-select-en">English</button>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header id="app-header">
+  <div class="header-left">
+    <h1 class="app-title" data-i18n="app.title">Ad Review</h1>
+    <span class="sync-status sync-disconnected" id="sync-status">오프라인</span>
+    <span class="queue-badge" id="queue-count"></span>
+    <span class="current-filename" id="current-filename"></span>
+    <label class="upload-btn" id="upload-label">
+      <input type="file" id="excel-upload" accept=".xlsx,.xls,.csv" hidden>
+      <span data-i18n="upload.btn">Excel 업로드</span>
+    </label>
+  </div>
+  <div class="header-center">
+    <select id="advertiser-filter">
+      <option value="ALL" data-i18n="filter.allAdv">전체 광고주</option>
+    </select>
+    <select id="status-filter">
+      <option value="all" data-i18n="filter.all">전체</option>
+      <option value="unreviewed" data-i18n="filter.unreviewed">미검수</option>
+      <option value="pass" data-i18n="filter.pass">Pass</option>
+      <option value="fail" data-i18n="filter.fail">Fail</option>
+    </select>
+  </div>
+  <div class="header-right">
+    <div class="header-actions">
+      <button class="btn-icon" id="btn-refresh" title="Sheets에서 새로고침">&#x21bb;</button>
+      <button class="btn-icon" id="btn-sheets-link" title="Google Sheets 열기">&#x1F4CA;</button>
+      <button class="lang-toggle" id="lang-toggle">EN</button>
+    </div>
+  </div>
+</header>
+
+<!-- Progress Bar -->
+<div id="progress-section">
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progress-bar"></div>
+  </div>
+  <div class="progress-stats" id="progress-stats" data-i18n="progress.upload">데이터를 업로드하세요</div>
+</div>
+
+<!-- Upload Prompt (shown when no data) -->
+<div id="upload-prompt">
+  <div class="upload-dropzone" id="dropzone">
+    <p class="dropzone-icon">📂</p>
+    <p class="dropzone-text" data-i18n="upload.dropText">Excel 파일을 드래그하거나 클릭하여 업로드</p>
+    <p class="dropzone-hint" data-i18n="upload.dropHint">.xlsx, .xls, .csv 파일 지원</p>
+  </div>
+</div>
+
+<!-- Main Content (hidden until data loaded) -->
+<main id="main-content" style="display:none;">
+
+  <!-- Bizboard Desktop -->
+  <div class="bizboard-wrapper">
+    <div class="bizboard-box" id="bizboard-desktop">
+      <div class="text-area">
+        <div class="main-copy" id="bb-main-copy"></div>
+        <div class="sub-copy" id="bb-sub-copy"></div>
+        <div class="dsp-label">
+          <span class="ad-badge">AD</span>
+          <span id="bb-dsp-text"></span>
+        </div>
+      </div>
+      <div class="thumbnail-area">
+        <img id="bb-thumbnail" src="" alt="썸네일">
+      </div>
+    </div>
+  </div>
+
+  <!-- Bizboard Mobile + Product Info -->
+  <div class="info-row">
+    <div class="preview-mobile">
+      <div class="mobile-frame">
+        <div class="mobile-bizboard" id="bizboard-mobile">
+          <div class="text-area-m">
+            <div class="main-copy-m" id="bb-main-copy-m"></div>
+            <div class="sub-copy-m" id="bb-sub-copy-m"></div>
+            <div class="dsp-label-m">
+              <span class="ad-badge-m">AD</span>
+              <span id="bb-dsp-text-m"></span>
+            </div>
+          </div>
+          <div class="thumbnail-m">
+            <img id="bb-thumbnail-m" src="" alt="썸네일">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-info" id="product-info">
+      <div class="info-item"><span class="info-label" data-i18n="info.id">ID</span> <span id="info-id"></span></div>
+      <div class="info-item"><span class="info-label" data-i18n="info.advertiser">광고주</span> <span id="info-advertiser"></span></div>
+      <div class="info-item"><span class="info-label" data-i18n="info.name">상품명</span> <span id="info-name"></span></div>
+      <div class="info-item"><span class="info-label" data-i18n="info.copy">카피</span> <span id="info-adcopy"></span></div>
+      <div class="info-item"><span class="info-label" data-i18n="info.charLength">글자수</span> <span id="info-charlength"></span></div>
+      <div class="info-item">
+        <span class="info-label" data-i18n="info.image">이미지</span>
+        <a id="info-url" href="#" target="_blank" class="info-url">URL</a>
+        <button class="btn-copy" id="copy-url-btn" title="URL 복사">📋</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Panel -->
+  <div class="ai-panel" id="ai-panel">
+    <div class="ai-panel-title" data-i18n="ai.title">AI 판정 결과</div>
+    <div class="ai-badges">
+      <span class="ai-badge" id="ai-final-badge"></span>
+      <span class="ai-badge" id="ai-packshot-badge"></span>
+      <span class="ai-badge" id="ai-bg-badge"></span>
+    </div>
+    <div class="ai-details">
+      <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="ai.vertical">업종:</span> <span id="ai-vertical"></span></div>
+      <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="ai.verticalReason">업종 사유:</span> <span id="ai-vertical-reason"></span></div>
+      <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="ai.packshotReason">팩샷 사유:</span> <span id="ai-packshot-reason"></span></div>
+    </div>
+  </div>
+
+  <!-- Human Review Panel -->
+  <div class="human-panel" id="human-review-panel" style="display:none;">
+    <div class="ai-panel-title" data-i18n="human.title">내 판정 결과</div>
+    <div class="ai-badges">
+      <span class="ai-badge" id="human-verdict-badge"></span>
+    </div>
+    <div class="ai-details">
+      <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="human.image">이미지:</span> <span id="human-image-reason"></span></div>
+      <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="human.vertical">업종:</span> <span id="human-vertical-reason"></span></div>
+    </div>
+  </div>
+
+  <!-- Review Panel -->
+  <div class="review-panel" id="review-panel">
+    <div class="verdict-buttons" id="verdict-buttons">
+      <button class="btn-verdict btn-pass" id="btn-pass">PASS <kbd>P</kbd></button>
+      <button class="btn-verdict btn-fail" id="btn-fail">FAIL <kbd>F</kbd></button>
+      <button class="btn-verdict btn-skip" id="btn-skip">SKIP <kbd>S</kbd></button>
+    </div>
+    <div class="reason-panel" id="reason-panel" style="display:none;"></div>
+    <div class="verdict-match" id="verdict-match"></div>
+  </div>
+
+  <!-- Keyboard Hint -->
+  <div class="keyboard-hint" id="keyboard-hint"></div>
+
+</main>
+
+<!-- Navigation Footer -->
+<footer id="nav-footer" style="display:none;">
+  <button class="btn-nav" id="btn-prev"><span data-i18n="nav.prev">← 이전</span> <kbd>A</kbd></button>
+  <span class="nav-position" id="nav-position">#0 / 0</span>
+  <button class="btn-nav" id="btn-next"><span data-i18n="nav.next">다음 →</span> <kbd>D</kbd></button>
+</footer>
+
+<!-- Modal Overlay (for custom reason input) -->
+<div class="modal-overlay" id="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title" data-i18n="modal.customTitle">기타 사유 입력</div>
+    <input type="text" class="modal-input" id="modal-input" data-i18n="modal.placeholder" data-i18n-attr="placeholder" placeholder="사유를 입력하세요...">
+    <div class="modal-recent" id="modal-recent"></div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-ok" id="modal-ok"><span data-i18n="modal.ok">확인</span> <kbd>Enter</kbd></button>
+      <button class="btn-modal btn-modal-cancel" id="modal-cancel"><span data-i18n="modal.cancel">취소</span> <kbd>Esc</kbd></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/sheets.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/bizboard.js"></script>
+<script src="js/review.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

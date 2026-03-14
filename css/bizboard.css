@@ -1,0 +1,198 @@
+/* Kakao BizBoard Styles - extracted from ThisisRejected.html */
+
+/* Desktop BizBoard (1029 x 258px) */
+.bizboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.bizboard-box {
+  width: 1029px;
+  height: 258px;
+  background: #F0F0F0;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 48px;
+}
+
+.text-area {
+  flex: 1;
+  max-width: 585px;
+  min-width: 290px;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-copy {
+  font-family: 'Spoqa Han Sans Neo', 'Spoqa Han Sans', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  color: #4C4C4C;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-copy {
+  font-family: 'Spoqa Han Sans Neo', 'Spoqa Han Sans', sans-serif;
+  font-weight: 400;
+  font-size: 36px;
+  color: #999999;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 4px;
+}
+
+.dsp-label {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  color: #BBBBBB;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+}
+
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #BBBBBB;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.thumbnail-area {
+  width: 315px;
+  height: 186px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-left: auto;
+  background: #FFFFFF;
+}
+
+.thumbnail-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Mobile BizBoard (375 x 94px) */
+.preview-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-frame {
+  width: 375px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.mobile-bizboard {
+  width: 375px;
+  height: 94px;
+  background: #F0F0F0;
+  display: flex;
+  align-items: center;
+  padding: 0 17px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.text-area-m {
+  flex: 1;
+  max-width: 213px;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-copy-m {
+  font-family: 'Spoqa Han Sans Neo', 'Spoqa Han Sans', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #4C4C4C;
+  line-height: 1.25;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-copy-m {
+  font-family: 'Spoqa Han Sans Neo', 'Spoqa Han Sans', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: #999999;
+  line-height: 1.3;
+  letter-spacing: -0.1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.dsp-label-m {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: #BBBBBB;
+  letter-spacing: -0.1px;
+}
+
+.ad-badge-m {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #BBBBBB;
+  color: #FFFFFF;
+  font-size: 6px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.thumbnail-m {
+  width: 115px;
+  height: 68px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  margin-left: auto;
+  background: #FFFFFF;
+}
+
+.thumbnail-m img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Responsive scaling */
+@media (max-width: 1100px) {
+  .bizboard-wrapper {
+    transform: scale(calc(100vw / 1100));
+    transform-origin: top center;
+  }
+}
