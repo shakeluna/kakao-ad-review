@@ -368,10 +368,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const uploadLabel = document.getElementById('upload-label');
   const excelInput = document.getElementById('excel-upload');
 
-  uploadLabel.addEventListener('click', (e) => {
-    // Use standard file input
+  uploadLabel.addEventListener('click', () => {
     excelInput.click();
-    e.preventDefault();
   });
 
   excelInput.addEventListener('change', (e) => {
