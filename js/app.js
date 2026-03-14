@@ -312,7 +312,88 @@ function changeLang(lang) {
 
 // === Initialization ===
 
+// === Auth Gate ===
+
+function initAuthGate() {
+  const overlay = document.getElementById('auth-overlay');
+  const input = document.getElementById('auth-input');
+  const btn = document.getElementById('auth-submit');
+  const error = document.getElementById('auth-error');
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_SEC = 30;
+  let fails = parseInt(sessionStorage.getItem('auth_fails') || '0', 10);
+
+  function applyLang() {
+    const lang = I18n.getLang();
+    if (lang) {
+      document.getElementById('auth-title').textContent = I18n.t('auth.title');
+      input.placeholder = I18n.t('auth.placeholder');
+      btn.textContent = I18n.t('auth.submit');
+    }
+  }
+
+  function showError(msg) { error.textContent = msg; }
+
+  function lock() {
+    input.disabled = true;
+    btn.disabled = true;
+    let remaining = LOCKOUT_SEC;
+    showError(I18n.t('auth.lockout', { seconds: remaining }));
+    const timer = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timer);
+        fails = 0;
+        sessionStorage.setItem('auth_fails', '0');
+        input.disabled = false;
+        btn.disabled = false;
+        showError('');
+        input.focus();
+      } else {
+        showError(I18n.t('auth.lockout', { seconds: remaining }));
+      }
+    }, 1000);
+  }
+
+  function attempt() {
+    const val = input.value.trim();
+    if (!val) return;
+    if (val === Config.SECRET_TOKEN) {
+      sessionStorage.setItem('auth_ok', '1');
+      sessionStorage.removeItem('auth_fails');
+      overlay.classList.add('hidden');
+      initApp();
+    } else {
+      fails++;
+      sessionStorage.setItem('auth_fails', String(fails));
+      input.value = '';
+      if (fails >= MAX_ATTEMPTS) {
+        lock();
+      } else {
+        const left = MAX_ATTEMPTS - fails;
+        showError(I18n.t('auth.error') + ' — ' + I18n.t('auth.attemptsLeft', { n: left }));
+      }
+    }
+  }
+
+  applyLang();
+  if (fails >= MAX_ATTEMPTS) lock();
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') attempt(); });
+  btn.addEventListener('click', attempt);
+  input.focus();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  // Auth gate check
+  if (sessionStorage.getItem('auth_ok') !== '1') {
+    initAuthGate();
+    return;
+  }
+  document.getElementById('auth-overlay').classList.add('hidden');
+  initApp();
+});
+
+async function initApp() {
   // Language selection
   if (I18n.needsSelection()) {
     const langModal = document.getElementById('lang-modal');
@@ -451,4 +532,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('review-saved', () => {
     updateProgress();
   });
-});
+}

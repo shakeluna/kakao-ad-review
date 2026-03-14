@@ -73,6 +73,12 @@ const I18n = (() => {
       'modal.allReviewed': '모든 항목 검수 완료!',
       'btn.sheetsLink': 'Sheets 열기',
       'btn.refresh': '새로고침',
+      'auth.title': '접근 제한',
+      'auth.placeholder': '비밀번호 입력',
+      'auth.submit': '확인',
+      'auth.error': '비밀번호가 틀렸습니다',
+      'auth.lockout': '{seconds}초 후 재시도 가능',
+      'auth.attemptsLeft': '남은 시도: {n}회',
     },
     en: {
       'app.title': 'Ad Review',
@@ -145,6 +151,12 @@ const I18n = (() => {
       'modal.allReviewed': 'All items reviewed!',
       'btn.sheetsLink': 'Open Sheets',
       'btn.refresh': 'Refresh',
+      'auth.title': 'Access Restricted',
+      'auth.placeholder': 'Enter password',
+      'auth.submit': 'Submit',
+      'auth.error': 'Incorrect password',
+      'auth.lockout': 'Retry in {seconds}s',
+      'auth.attemptsLeft': '{n} attempts left',
     }
   };
 

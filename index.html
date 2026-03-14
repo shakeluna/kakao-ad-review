@@ -49,6 +49,17 @@
 </head>
 <body>
 
+<!-- Auth Gate -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-icon">&#x1F512;</div>
+    <div class="auth-title" id="auth-title">접근 제한</div>
+    <input type="password" class="auth-input" id="auth-input" placeholder="비밀번호 입력" autocomplete="off">
+    <button class="auth-submit" id="auth-submit">확인</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
 <!-- Language Selection Modal (first visit) -->
 <div class="modal-overlay" id="lang-modal" style="display:none;">
   <div class="modal-box">
