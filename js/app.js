@@ -260,6 +260,20 @@ async function loadFromSheets() {
     const items = data.map(normalizeRow);
     AppState.items = items;
     await Storage.saveAllItems(items);
+
+    // localStorage에 lastVerdict가 없으면, 가장 최근 검수된 항목에서 초기화
+    if (!localStorage.getItem('lastVerdict')) {
+      const reviewed = items.filter(i => i.Human_Result && (i.Human_Image_Reason || i.Human_Vertical_Reason));
+      if (reviewed.length > 0) {
+        const last = reviewed[reviewed.length - 1];
+        localStorage.setItem('lastVerdict', JSON.stringify({
+          verdict: last.Human_Result,
+          imageReason: last.Human_Image_Reason || '',
+          verticalReason: last.Human_Vertical_Reason || '',
+        }));
+      }
+    }
+
     return true;
   } catch (e) {
     console.error('Failed to load from Sheets:', e);
