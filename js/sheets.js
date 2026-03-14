@@ -80,7 +80,7 @@ const SheetsAPI = (() => {
 
   // === Data Upload ===
 
-  async function uploadData(items) {
+  async function uploadData(items, append) {
     updateStatus('syncing');
 
     // Convert items to row arrays
@@ -104,6 +104,7 @@ const SheetsAPI = (() => {
         rows: chunk,
         chunkIndex: i,
         totalChunks: totalChunks,
+        append: !!append,
       });
       if (!result.success) throw new Error(result.error);
 

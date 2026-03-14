@@ -165,10 +165,18 @@ function handleUpload(body) {
   var headers = body.headers;
   var rows = body.rows;
   var isFirstChunk = body.chunkIndex === 0;
+  var isAppend = body.append === true;
 
-  if (isFirstChunk) {
+  if (isFirstChunk && !isAppend) {
     sheet.clear();
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  }
+
+  if (isFirstChunk && isAppend) {
+    var existing = sheet.getDataRange().getValues();
+    if (existing.length === 0 || (existing.length === 1 && existing[0].join('') === '')) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
   }
 
   if (rows.length > 0) {

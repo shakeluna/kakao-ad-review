@@ -197,20 +197,44 @@ function handleExcelUpload(file) {
       const items = rawRows.map(normalizeRow);
       showToast(I18n.t('toast.parsed', { count: items.length }));
 
+      const isAppend = AppState.items.length > 0;
+      let itemsToUpload = items;
+      let mergedItems = items;
+
+      if (isAppend) {
+        const existingIds = new Set(AppState.items.map(i => i.identifier));
+        const newItems = items.filter(i => !existingIds.has(i.identifier));
+
+        if (newItems.length === 0) {
+          showToast(I18n.t('toast.noDuplicates'));
+          return;
+        }
+
+        if (newItems.length < items.length) {
+          showToast(I18n.t('toast.duplicatesSkipped', {
+            added: newItems.length,
+            skipped: items.length - newItems.length
+          }));
+        }
+
+        itemsToUpload = newItems;
+        mergedItems = [...AppState.items, ...newItems];
+      }
+
       // Upload to Google Sheets if configured
       if (SheetsAPI.isConfigured()) {
         try {
-          await SheetsAPI.uploadData(items);
-          showToast(I18n.t('toast.uploadComplete', { count: items.length }));
+          await SheetsAPI.uploadData(itemsToUpload, isAppend);
+          showToast(I18n.t(isAppend ? 'toast.appendComplete' : 'toast.uploadComplete', { count: itemsToUpload.length }));
         } catch (err) {
           console.error('Sheets upload failed:', err);
           showToast(I18n.t('toast.uploadFail'));
         }
       }
 
-      // Use parsed data directly (also cache in IndexedDB)
-      AppState.items = items;
-      await Storage.saveAllItems(items);
+      // Update state (merge or replace)
+      AppState.items = mergedItems;
+      await Storage.saveAllItems(mergedItems);
       Storage.saveSession('lastUploadFilename', file.name);
       document.getElementById('current-filename').textContent = file.name;
       applyFilters();
