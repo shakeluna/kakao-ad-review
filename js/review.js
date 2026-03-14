@@ -157,6 +157,70 @@ const Review = (() => {
     return container;
   }
 
+  // === Last Verdict (이전 설정 적용) ===
+
+  const LAST_VERDICT_KEY = 'lastVerdict';
+
+  function getLastVerdict() {
+    try { return JSON.parse(localStorage.getItem(LAST_VERDICT_KEY)); }
+    catch { return null; }
+  }
+
+  function saveLastVerdict() {
+    if (!AppState.currentVerdict) return;
+    if (!AppState.selectedImageReason && !AppState.selectedVerticalReason) return;
+    localStorage.setItem(LAST_VERDICT_KEY, JSON.stringify({
+      verdict: AppState.currentVerdict,
+      imageReason: AppState.selectedImageReason || '',
+      verticalReason: AppState.selectedVerticalReason || '',
+    }));
+  }
+
+  function applyLastVerdict() {
+    const last = getLastVerdict();
+    if (!last) return;
+    clearAutoSaveTimer();
+
+    // Set verdict mode
+    AppState.currentVerdict = last.verdict;
+    AppState.selectedImageReason = last.imageReason || null;
+    AppState.selectedVerticalReason = last.verticalReason || null;
+
+    renderHumanPanel();
+    if (saveCurrentVerdict()) {
+      if (AppState.currentIndex < AppState.filteredItems.length - 1) {
+        goTo(AppState.currentIndex + 1);
+      }
+    }
+  }
+
+  function renderLastVerdictButton() {
+    // Remove existing
+    const existing = document.getElementById('last-verdict-btn');
+    if (existing) existing.remove();
+
+    const last = getLastVerdict();
+    if (!last) return;
+
+    const item = AppState.filteredItems[AppState.currentIndex];
+    if (!item || item.Human_Result) return; // Only for unreviewed items
+
+    const imgLabel = findReasonLabel('image', last.imageReason) || '';
+    const vertLabel = findReasonLabel('vertical', last.verticalReason) || '';
+    const parts = [imgLabel, vertLabel].filter(Boolean).join(', ');
+    const verdictClass = last.verdict === 'Pass' ? 'last-verdict-pass' : 'last-verdict-fail';
+
+    const btn = document.createElement('button');
+    btn.id = 'last-verdict-btn';
+    btn.className = `last-verdict-btn ${verdictClass}`;
+    btn.innerHTML = `<span class="last-verdict-label">${I18n.t('reason.applyLast')}</span> <span class="last-verdict-detail">${last.verdict} | ${parts}</span> <kbd>Space</kbd>`;
+    btn.addEventListener('click', applyLastVerdict);
+
+    // Insert before verdict buttons
+    const reviewPanel = document.getElementById('review-panel');
+    reviewPanel.insertBefore(btn, reviewPanel.firstChild);
+  }
+
   // === AI Panel Rendering ===
 
   function renderAIPanel(item) {
@@ -438,6 +502,7 @@ const Review = (() => {
     if (!item) return false;
 
     saveComboToHistory();
+    saveLastVerdict();
 
     const reviewData = {
       identifier: item.identifier,
@@ -662,6 +727,7 @@ const Review = (() => {
     // Auto-start Pass for unreviewed items
     if (item && !item.Human_Result) {
       startPass();
+      renderLastVerdictButton();
     } else {
       renderHumanPanel(item);
       updateKeyboardHint();
@@ -681,5 +747,6 @@ const Review = (() => {
     confirmCustomModal,
     closeCustomModal,
     updateKeyboardHint,
+    applyLastVerdict,
   };
 })();

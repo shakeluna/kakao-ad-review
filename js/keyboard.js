@@ -22,7 +22,8 @@ document.addEventListener('keydown', (e) => {
 
   switch (mode) {
     case 'nav':
-      if (keyUpper === 'P') { e.preventDefault(); Review.startPass(); }
+      if (key === ' ') { e.preventDefault(); Review.applyLastVerdict(); }
+      else if (keyUpper === 'P') { e.preventDefault(); Review.startPass(); }
       else if (keyUpper === 'F') { e.preventDefault(); Review.startFail(); }
       else if (keyUpper === 'S') { e.preventDefault(); Review.skip(); }
       else if (key === 'ArrowLeft' || keyUpper === 'A') { e.preventDefault(); goPrev(); }
@@ -30,7 +31,8 @@ document.addEventListener('keydown', (e) => {
       break;
 
     case 'pass_reason':
-      if (key === 'Escape') { e.preventDefault(); Review.cancelReason(); }
+      if (key === ' ') { e.preventDefault(); Review.applyLastVerdict(); }
+      else if (key === 'Escape') { e.preventDefault(); Review.cancelReason(); }
       else if (keyUpper === 'F') { e.preventDefault(); Review.startFail(); }
       else if (key === 'Enter' || key === 'ArrowRight' || keyUpper === 'D') { e.preventDefault(); goNext(); }
       else if (keyUpper === 'A' || key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
@@ -38,7 +40,8 @@ document.addEventListener('keydown', (e) => {
       break;
 
     case 'fail_reason':
-      if (key === 'Escape') { e.preventDefault(); Review.cancelReason(); }
+      if (key === ' ') { e.preventDefault(); Review.applyLastVerdict(); }
+      else if (key === 'Escape') { e.preventDefault(); Review.cancelReason(); }
       else if (keyUpper === 'P') { e.preventDefault(); Review.startPass(); }
       else if (key === 'Enter' || key === 'ArrowRight' || keyUpper === 'D') { e.preventDefault(); goNext(); }
       else if (keyUpper === 'A' || key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
