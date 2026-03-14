@@ -36,6 +36,127 @@ const Review = (() => {
     { key: 'U', label: '기타 규제업종', value: null, isCustom: true },
   ];
 
+  // === Auto-save Timer ===
+
+  let autoSaveTimer = null;
+  const AUTO_SAVE_DELAY = 1000;
+
+  function startAutoSaveTimer() {
+    clearAutoSaveTimer();
+    if (!AppState.selectedImageReason && !AppState.selectedVerticalReason) return;
+    // Show countdown bar
+    let bar = document.getElementById('auto-save-bar');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'auto-save-bar';
+      document.getElementById('reason-panel').appendChild(bar);
+    }
+    bar.style.animation = 'none';
+    void bar.offsetWidth; // reflow
+    bar.style.animation = '';
+
+    autoSaveTimer = setTimeout(() => {
+      autoSaveTimer = null;
+      removeAutoSaveBar();
+      if (AppState.currentVerdict) {
+        confirmReason();
+      }
+    }, AUTO_SAVE_DELAY);
+  }
+
+  function clearAutoSaveTimer() {
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = null;
+    }
+    removeAutoSaveBar();
+  }
+
+  function removeAutoSaveBar() {
+    const bar = document.getElementById('auto-save-bar');
+    if (bar) bar.remove();
+  }
+
+  // === Quick Combos ===
+
+  const COMBO_KEY = 'reviewCombos';
+  const MAX_COMBOS = 5;
+
+  function getRecentCombos() {
+    try { return JSON.parse(localStorage.getItem(COMBO_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  function saveComboToHistory() {
+    if (!AppState.currentVerdict) return;
+    if (!AppState.selectedImageReason && !AppState.selectedVerticalReason) return;
+
+    const combo = {
+      verdict: AppState.currentVerdict,
+      imageReason: AppState.selectedImageReason || '',
+      verticalReason: AppState.selectedVerticalReason || '',
+    };
+
+    let combos = getRecentCombos();
+    const idx = combos.findIndex(c =>
+      c.verdict === combo.verdict &&
+      c.imageReason === combo.imageReason &&
+      c.verticalReason === combo.verticalReason
+    );
+
+    if (idx >= 0) {
+      combos[idx].count = (combos[idx].count || 1) + 1;
+      const existing = combos.splice(idx, 1)[0];
+      combos.unshift(existing);
+    } else {
+      combo.count = 1;
+      combos.unshift(combo);
+    }
+
+    combos = combos.slice(0, MAX_COMBOS);
+    localStorage.setItem(COMBO_KEY, JSON.stringify(combos));
+  }
+
+  function applyQuickCombo(combo) {
+    clearAutoSaveTimer();
+    AppState.selectedImageReason = combo.imageReason || null;
+    AppState.selectedVerticalReason = combo.verticalReason || null;
+    renderHumanPanel();
+    saveComboToHistory();
+    if (saveCurrentVerdict()) {
+      if (AppState.currentIndex < AppState.filteredItems.length - 1) {
+        goTo(AppState.currentIndex + 1);
+      }
+    }
+  }
+
+  function renderQuickCombos(verdictType) {
+    const verdict = verdictType === 'pass' ? 'Pass' : 'Fail';
+    const combos = getRecentCombos().filter(c => c.verdict === verdict);
+    if (combos.length === 0) return null;
+
+    const container = document.createElement('div');
+    container.className = 'quick-combos';
+    container.innerHTML = `<div class="quick-combos-title">${I18n.t('reason.quickTitle')}</div>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'quick-combos-grid';
+
+    combos.forEach(combo => {
+      const btn = document.createElement('button');
+      btn.className = 'quick-combo-btn';
+      const imgLabel = findReasonLabel('image', combo.imageReason) || '';
+      const vertLabel = findReasonLabel('vertical', combo.verticalReason) || '';
+      const labels = [imgLabel, vertLabel].filter(Boolean).join(' + ');
+      btn.innerHTML = `${labels} <span class="combo-count">\u00d7${combo.count}</span>`;
+      btn.addEventListener('click', () => applyQuickCombo(combo));
+      grid.appendChild(btn);
+    });
+
+    container.appendChild(grid);
+    return container;
+  }
+
   // === AI Panel Rendering ===
 
   function renderAIPanel(item) {
@@ -130,6 +251,7 @@ const Review = (() => {
   // === Verdict Actions ===
 
   function startPass() {
+    clearAutoSaveTimer();
     AppState.currentVerdict = 'Pass';
     AppState.keyboardMode = 'pass_reason';
     // Defaults: Packshot O + 일반 소비재
@@ -147,6 +269,7 @@ const Review = (() => {
   }
 
   function startFail() {
+    clearAutoSaveTimer();
     AppState.currentVerdict = 'Fail';
     AppState.keyboardMode = 'fail_reason';
     // Default: 로고/배지
@@ -167,6 +290,7 @@ const Review = (() => {
   }
 
   function cancelReason() {
+    clearAutoSaveTimer();
     AppState.keyboardMode = 'nav';
     AppState.currentVerdict = null;
     AppState.selectedImageReason = null;
@@ -186,6 +310,10 @@ const Review = (() => {
     panel.innerHTML = '';
 
     const selectedClass = verdictType === 'pass' ? 'selected-pass' : 'selected-fail';
+
+    // Quick combos
+    const quickEl = renderQuickCombos(verdictType);
+    if (quickEl) panel.appendChild(quickEl);
 
     // Image reasons
     const imgCat = document.createElement('div');
@@ -272,6 +400,7 @@ const Review = (() => {
     });
 
     renderHumanPanel();
+    startAutoSaveTimer();
   }
 
   function confirmReason() {
@@ -295,6 +424,7 @@ const Review = (() => {
     if (agreeBtn) agreeBtn.classList.add(AppState.currentVerdict === 'Pass' ? 'selected-pass' : 'selected-fail');
 
     renderHumanPanel();
+    startAutoSaveTimer();
   }
 
   function saveCurrentVerdict() {
@@ -306,6 +436,8 @@ const Review = (() => {
 
     const item = AppState.filteredItems[AppState.currentIndex];
     if (!item) return false;
+
+    saveComboToHistory();
 
     const reviewData = {
       identifier: item.identifier,
@@ -377,6 +509,7 @@ const Review = (() => {
   let customModalCategory = null;
 
   function showCustomModal(category) {
+    clearAutoSaveTimer();
     customModalCategory = category;
     AppState.keyboardMode = 'modal';
 

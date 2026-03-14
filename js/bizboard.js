@@ -105,12 +105,12 @@ const BizBoard = (() => {
   }
 
   function preloadNext() {
-    const nextIdx = AppState.currentIndex + 1;
-    if (nextIdx < AppState.filteredItems.length) {
-      const nextItem = AppState.filteredItems[nextIdx];
-      if (nextItem && nextItem.url) {
+    const end = Math.min(AppState.currentIndex + 6, AppState.filteredItems.length);
+    for (let i = AppState.currentIndex + 1; i < end; i++) {
+      const item = AppState.filteredItems[i];
+      if (item && item.url) {
         const img = new Image();
-        img.src = nextItem.url;
+        img.src = item.url;
       }
     }
   }
