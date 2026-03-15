@@ -45,6 +45,23 @@
     color: #555;
   }
   .btn-icon:hover { background: #f0f0f0; }
+  .cache-group { display: flex; align-items: center; gap: 2px; position: relative; }
+  .btn-danger { color: #c62828; border-color: #e57373; }
+  .btn-danger:hover { background: #ffebee; }
+  .btn-help {
+    width: 20px; height: 20px; padding: 0;
+    font-size: 11px; font-weight: 700;
+    border-radius: 50%; color: #888; border-color: #ccc;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-help:hover { background: #e3f2fd; color: #1565c0; border-color: #90caf9; }
+  .cache-tooltip {
+    display: none; position: absolute; top: 100%; right: 0; margin-top: 6px;
+    background: #333; color: #fff; padding: 10px 14px; border-radius: 8px;
+    font-size: 12px; line-height: 1.6; width: 280px; z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,.25); white-space: pre-line;
+  }
+  .cache-tooltip.show { display: block; }
 </style>
 </head>
 <body>
@@ -96,6 +113,11 @@
   </div>
   <div class="header-right">
     <div class="header-actions">
+      <span class="cache-group">
+        <button class="btn-icon btn-danger" id="btn-clear-cache">&#x1F5D1; <span data-i18n="btn.clearCache">캐시 초기화</span></button>
+        <button class="btn-icon btn-help" id="btn-cache-help">?</button>
+        <div class="cache-tooltip" id="cache-tooltip"></div>
+      </span>
       <button class="btn-icon" id="btn-refresh" title="Sheets에서 새로고침">&#x21bb;</button>
       <button class="btn-icon" id="btn-sheets-link" title="Google Sheets 열기">&#x1F4CA;</button>
       <button class="lang-toggle" id="lang-toggle">EN</button>

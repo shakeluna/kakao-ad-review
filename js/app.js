@@ -504,6 +504,31 @@ async function initApp() {
     });
   }
 
+  // Clear cache button
+  const clearCacheBtn = document.getElementById('btn-clear-cache');
+  if (clearCacheBtn) {
+    clearCacheBtn.addEventListener('click', () => {
+      if (!confirm(I18n.t('cache.confirmClear'))) return;
+      indexedDB.deleteDatabase('AdReviewDB');
+      Storage.clearSession();
+      localStorage.removeItem('lastVerdict');
+      showToast(I18n.t('toast.cacheCleared'));
+      setTimeout(() => location.reload(), 500);
+    });
+  }
+
+  // Cache help tooltip
+  const cacheHelpBtn = document.getElementById('btn-cache-help');
+  const cacheTooltip = document.getElementById('cache-tooltip');
+  if (cacheHelpBtn && cacheTooltip) {
+    cacheTooltip.textContent = I18n.t('cache.tooltip');
+    cacheHelpBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cacheTooltip.classList.toggle('show');
+    });
+    document.addEventListener('click', () => cacheTooltip.classList.remove('show'));
+  }
+
   // Refresh from Sheets button
   const refreshBtn = document.getElementById('btn-refresh');
   if (refreshBtn) {

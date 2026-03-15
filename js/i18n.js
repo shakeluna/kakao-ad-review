@@ -81,6 +81,10 @@ const I18n = (() => {
       'auth.error': '비밀번호가 틀렸습니다',
       'auth.lockout': '{seconds}초 후 재시도 가능',
       'auth.attemptsLeft': '남은 시도: {n}회',
+      'btn.clearCache': '캐시 초기화',
+      'cache.confirmClear': '브라우저 캐시(IndexedDB, 오프라인 큐, 세션)를 모두 삭제합니다.\n계속하시겠습니까?',
+      'cache.tooltip': '다음 항목을 삭제합니다:\n- IndexedDB 캐시 (검수 데이터)\n- 오프라인 대기열 (미전송 리뷰)\n- 세션 정보 (현재 위치, 필터)\n\nGoogle Sheets 원본 데이터는 영향 없습니다.\n삭제 후 페이지가 새로고침됩니다.',
+      'toast.cacheCleared': '캐시 초기화 완료',
     },
     en: {
       'app.title': 'Ad Review',
@@ -161,6 +165,10 @@ const I18n = (() => {
       'auth.error': 'Incorrect password',
       'auth.lockout': 'Retry in {seconds}s',
       'auth.attemptsLeft': '{n} attempts left',
+      'btn.clearCache': 'Clear Cache',
+      'cache.confirmClear': 'This will delete all browser cache (IndexedDB, offline queue, session).\nContinue?',
+      'cache.tooltip': 'This will delete:\n- IndexedDB cache (review data)\n- Offline queue (unsent reviews)\n- Session info (position, filters)\n\nGoogle Sheets data is NOT affected.\nPage will reload after clearing.',
+      'toast.cacheCleared': 'Cache cleared',
     }
   };
 
