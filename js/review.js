@@ -18,7 +18,7 @@ const Review = (() => {
 
   const FAIL_IMAGE_REASONS = [
     { key: '1', label: '텍스트 >50%', value: 'Text covers >50% of image area' },
-    { key: '2', label: '로고/배지', value: 'External logo/badge/watermark outside product' },
+    { key: '2', label: '로고/배지/텍스트', value: 'External logo/badge/text overlay outside product' },
     { key: '3', label: '비흰색 BG', value: 'Background is not #FFFFFF' },
     { key: '4', label: '이미지가 너무 작음', value: 'Image resolution too small' },
     { key: '5', label: '컬러심볼', value: 'Color symbol present in image' },
@@ -716,6 +716,25 @@ const Review = (() => {
     }
   });
 
+  // === Quick Fail (Ctrl+1~5) ===
+
+  function quickFail(reasonIndex) {
+    const reason = FAIL_IMAGE_REASONS[reasonIndex];
+    if (!reason) return;
+
+    clearAutoSaveTimer();
+    AppState.currentVerdict = 'Fail';
+    AppState.selectedImageReason = reason.value;
+    AppState.selectedVerticalReason = null;
+
+    renderHumanPanel();
+    if (saveCurrentVerdict()) {
+      if (AppState.currentIndex < AppState.filteredItems.length - 1) {
+        goTo(AppState.currentIndex + 1);
+      }
+    }
+  }
+
   return {
     startPass,
     startFail,
@@ -730,5 +749,6 @@ const Review = (() => {
     closeCustomModal,
     updateKeyboardHint,
     applyLastVerdict,
+    quickFail,
   };
 })();
