@@ -710,11 +710,43 @@ const Review = (() => {
     if (item && !item.Human_Result) {
       startPass();
       renderLastVerdictButton();
+      renderQuickFailGuide();
     } else {
       renderHumanPanel(item);
       updateKeyboardHint();
     }
   });
+
+  // === Quick Fail Guide ===
+
+  function renderQuickFailGuide() {
+    const existing = document.getElementById('quick-fail-guide');
+    if (existing) existing.remove();
+
+    const item = AppState.filteredItems[AppState.currentIndex];
+    if (!item || item.Human_Result) return;
+
+    const guide = document.createElement('div');
+    guide.id = 'quick-fail-guide';
+    guide.className = 'quick-fail-guide';
+
+    const keys = [
+      { key: 'Z', label: FAIL_IMAGE_REASONS[0].label },
+      { key: 'X', label: FAIL_IMAGE_REASONS[1].label },
+      { key: 'C', label: FAIL_IMAGE_REASONS[2].label },
+      { key: 'V', label: FAIL_IMAGE_REASONS[3].label },
+      { key: 'B', label: FAIL_IMAGE_REASONS[4].label },
+    ];
+
+    guide.innerHTML =
+      '<div class="quick-fail-title">빠른 Fail</div>' +
+      '<div class="quick-fail-keys">' +
+      keys.map(k => `<span class="quick-fail-item"><kbd>${k.key}</kbd> ${k.label}</span>`).join('') +
+      '</div>';
+
+    const reviewPanel = document.getElementById('review-panel');
+    reviewPanel.insertBefore(guide, reviewPanel.firstChild);
+  }
 
   // === Quick Fail (Ctrl+1~5) ===
 
