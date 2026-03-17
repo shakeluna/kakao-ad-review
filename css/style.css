@@ -282,13 +282,50 @@ select {
   gap: 16px;
 }
 
-/* Info Row: Mobile Bizboard + Product Info side by side */
+/* Info Row: Mobile Bizboard + Product Info side by side (legacy) */
 .info-row {
   display: flex;
   gap: 20px;
   width: 100%;
   max-width: 1029px;
   align-items: flex-start;
+}
+
+/* Two-column layout: content + sticky human panel */
+.main-columns {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1029px;
+  align-items: flex-start;
+}
+
+.main-col-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main-col-right {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 60px;
+  align-self: flex-start;
+  z-index: 50;
+}
+
+@media (max-width: 768px) {
+  .main-columns {
+    flex-direction: column;
+  }
+  .main-col-right {
+    width: 100%;
+    position: sticky;
+    top: 50px;
+  }
 }
 
 .product-info {
