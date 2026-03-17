@@ -162,68 +162,61 @@
     </div>
   </div>
 
-  <!-- Two-column layout: main content + sticky human panel -->
-  <div class="main-columns">
-    <div class="main-col-left">
-      <!-- Bizboard Mobile -->
-      <div class="preview-mobile">
-        <div class="mobile-frame">
-          <div class="mobile-bizboard" id="bizboard-mobile">
-            <div class="text-area-m">
-              <div class="main-copy-m" id="bb-main-copy-m"></div>
-              <div class="sub-copy-m" id="bb-sub-copy-m"></div>
-              <div class="dsp-label-m">
-                <span class="ad-badge-m">AD</span>
-                <span id="bb-dsp-text-m"></span>
-              </div>
-            </div>
-            <div class="thumbnail-m">
-              <img id="bb-thumbnail-m" src="" alt="썸네일">
-            </div>
+  <!-- Bizboard Mobile -->
+  <div class="preview-mobile">
+    <div class="mobile-frame">
+      <div class="mobile-bizboard" id="bizboard-mobile">
+        <div class="text-area-m">
+          <div class="main-copy-m" id="bb-main-copy-m"></div>
+          <div class="sub-copy-m" id="bb-sub-copy-m"></div>
+          <div class="dsp-label-m">
+            <span class="ad-badge-m">AD</span>
+            <span id="bb-dsp-text-m"></span>
           </div>
         </div>
-      </div>
-
-      <!-- Review Panel -->
-      <div class="review-panel" id="review-panel">
-        <div class="verdict-buttons" id="verdict-buttons">
-          <button class="btn-verdict btn-pass" id="btn-pass">PASS <kbd>P</kbd></button>
-          <button class="btn-verdict btn-fail" id="btn-fail">FAIL <kbd>F</kbd></button>
-        </div>
-        <div class="reason-panel" id="reason-panel" style="display:none;"></div>
-        <div class="verdict-match" id="verdict-match"></div>
-      </div>
-
-      <!-- Keyboard Hint -->
-      <div class="keyboard-hint" id="keyboard-hint"></div>
-
-      <!-- Product Info (moved to bottom) -->
-      <div class="product-info" id="product-info">
-        <div class="info-item"><span class="info-label" data-i18n="info.id">ID</span> <span id="info-id"></span></div>
-        <div class="info-item"><span class="info-label" data-i18n="info.advertiser">광고주</span> <span id="info-advertiser"></span></div>
-        <div class="info-item"><span class="info-label" data-i18n="info.name">상품명</span> <span id="info-name"></span></div>
-        <div class="info-item"><span class="info-label" data-i18n="info.copy">카피</span> <span id="info-adcopy"></span></div>
-        <div class="info-item"><span class="info-label" data-i18n="info.charLength">글자수</span> <span id="info-charlength"></span></div>
-        <div class="info-item">
-          <span class="info-label" data-i18n="info.image">이미지</span>
-          <a id="info-url" href="#" target="_blank" class="info-url">URL</a>
-          <button class="btn-copy" id="copy-url-btn" title="URL 복사">📋</button>
+        <div class="thumbnail-m">
+          <img id="bb-thumbnail-m" src="" alt="썸네일">
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="main-col-right">
-      <!-- Human Review Panel (sticky) -->
-      <div class="human-panel" id="human-review-panel" style="display:none;">
-        <div class="ai-panel-title" data-i18n="human.title">내 판정 결과</div>
-        <div class="ai-badges">
-          <span class="ai-badge" id="human-verdict-badge"></span>
-        </div>
-        <div class="ai-details">
-          <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="human.image">이미지:</span> <span id="human-image-reason"></span></div>
-          <div class="ai-detail-row"><span class="ai-detail-label" data-i18n="human.vertical">업종:</span> <span id="human-vertical-reason"></span></div>
-        </div>
-      </div>
+  <!-- Human Review Panel -->
+  <div class="human-panel" id="human-review-panel" style="display:none;">
+    <div class="human-panel-header">
+      <span class="ai-panel-title" data-i18n="human.title">내 판정 결과</span>
+      <span class="ai-badge" id="human-verdict-badge"></span>
+    </div>
+    <div class="human-panel-body">
+      <div class="human-detail"><span class="ai-detail-label" data-i18n="human.image">이미지:</span> <span id="human-image-reason"></span></div>
+      <div class="human-detail"><span class="ai-detail-label" data-i18n="human.vertical">업종:</span> <span id="human-vertical-reason"></span></div>
+    </div>
+  </div>
+
+  <!-- Review Panel -->
+  <div class="review-panel" id="review-panel">
+    <div class="verdict-buttons" id="verdict-buttons">
+      <button class="btn-verdict btn-pass" id="btn-pass">PASS <kbd>P</kbd></button>
+      <button class="btn-verdict btn-fail" id="btn-fail">FAIL <kbd>F</kbd></button>
+    </div>
+    <div class="reason-panel" id="reason-panel" style="display:none;"></div>
+    <div class="verdict-match" id="verdict-match"></div>
+  </div>
+
+  <!-- Keyboard Hint -->
+  <div class="keyboard-hint" id="keyboard-hint"></div>
+
+  <!-- Product Info -->
+  <div class="product-info" id="product-info">
+    <div class="info-item"><span class="info-label" data-i18n="info.id">ID</span> <span id="info-id"></span></div>
+    <div class="info-item"><span class="info-label" data-i18n="info.advertiser">광고주</span> <span id="info-advertiser"></span></div>
+    <div class="info-item"><span class="info-label" data-i18n="info.name">상품명</span> <span id="info-name"></span></div>
+    <div class="info-item"><span class="info-label" data-i18n="info.copy">카피</span> <span id="info-adcopy"></span></div>
+    <div class="info-item"><span class="info-label" data-i18n="info.charLength">글자수</span> <span id="info-charlength"></span></div>
+    <div class="info-item">
+      <span class="info-label" data-i18n="info.image">이미지</span>
+      <a id="info-url" href="#" target="_blank" class="info-url">URL</a>
+      <button class="btn-copy" id="copy-url-btn" title="URL 복사">📋</button>
     </div>
   </div>
 
