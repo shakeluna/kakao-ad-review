@@ -613,7 +613,6 @@ const Review = (() => {
 
     document.getElementById('btn-pass').addEventListener('click', startPass);
     document.getElementById('btn-fail').addEventListener('click', startFail);
-    document.getElementById('btn-skip').addEventListener('click', skip);
   });
 
   // === Keyboard Hint ===
@@ -701,15 +700,13 @@ const Review = (() => {
     if (key === '0') { aiAgree(); return; }
   }
 
-  // Listen for index changes to render AI panel + review panel
+  // Listen for index changes to render review panel
   document.addEventListener('index-changed', () => {
     const item = AppState.filteredItems[AppState.currentIndex];
-    renderAIPanel(item);
     renderReviewPanel(item);
     // Auto-start Pass for unreviewed items
     if (item && !item.Human_Result) {
       startPass();
-      renderLastVerdictButton();
       renderQuickFailGuide();
     } else {
       renderHumanPanel(item);
@@ -741,11 +738,11 @@ const Review = (() => {
     ];
 
     guide.innerHTML =
-      '<div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">빠른 Fail</div>' +
+      `<div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">${I18n.t('quickFail.title')}</div>` +
       '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
       keys.map(k =>
         `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#fff;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;color:#555;">` +
-        `<span style="display:inline-block;min-width:20px;text-align:center;padding:1px 6px;background:#e74c3c;color:#fff;border-radius:4px;font-size:11px;font-weight:700;">${k.key}</span> ${k.label}</span>`
+        `<span style="display:inline-block;min-width:20px;text-align:center;padding:1px 6px;background:#e74c3c;color:#fff;border-radius:4px;font-size:11px;font-weight:700;">${k.key}</span> ${I18n.tLabel(k.label)}</span>`
       ).join('') +
       '</div>';
 
