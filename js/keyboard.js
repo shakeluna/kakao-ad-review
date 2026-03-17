@@ -20,8 +20,8 @@ document.addEventListener('keydown', (e) => {
   const keyUpper = key.toUpperCase();
   const mode = AppState.keyboardMode;
 
-  // Z/X/C/V/B: Quick Fail shortcuts (nav mode only, no modifiers)
-  if (!e.ctrlKey && !e.altKey && !e.shiftKey && mode === 'nav') {
+  // Z/X/C/V/B: Quick Fail shortcuts (nav/pass_reason/fail_reason, no modifiers)
+  if (!e.ctrlKey && !e.altKey && !e.shiftKey && mode !== 'modal') {
     const quickFailMap = { 'Z': 0, 'X': 1, 'C': 2, 'V': 3, 'B': 4 };
     if (keyUpper in quickFailMap) {
       e.preventDefault();
