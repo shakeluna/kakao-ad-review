@@ -5,34 +5,82 @@ const Review = (() => {
   // === Reason Definitions ===
 
   const PASS_IMAGE_REASONS = [
-    { key: '1', label: 'BG Pure White + Packshot', value: 'Clean product photo on pure white background (#FFFFFF)' },
+    { key: '1', label: 'BG Pure White + Packshot', value: 'Clean product photo on pure white background (#FFFFFF)', tooltip: {
+      ko: '순수 흰색(#FFFFFF) 배경 + 상품 단독 촬영.\n텍스트/로고/배지/프로모션 없음. 텍스트 50% 미만.',
+      en: 'Pure white (#FFFFFF) background + single product.\nNo text/logos/badges/promotions. Text under 50%.'
+    }},
     { key: '2', label: '기타 (이미지)', value: null, isCustom: true },
   ];
 
   const PASS_VERTICAL_REASONS = [
-    { key: '5', label: '일반 소비재', value: 'General consumer product. No restricted industry match' },
-    { key: '6', label: '일반 식품', value: 'General food product. No health supplement indicators' },
-    { key: '7', label: '일반 가전', value: 'General consumer electronics. No restriction' },
+    { key: '5', label: '일반 소비재', value: 'General consumer product. No restricted industry match', tooltip: {
+      ko: '패션, 생활용품, 서적 등 제한 업종에 해당하지 않는 일반 소비재.',
+      en: 'Fashion, household items, books, etc. No restricted industry match.'
+    }},
+    { key: '6', label: '일반 식품', value: 'General food product. No health supplement indicators', tooltip: {
+      ko: '건강기능식품이 아닌 일반 식품.\n주의: 즙/진액/엑기스/농축액은 Not Sure로 별도 판단.',
+      en: 'General food, not health supplements.\nNote: Juices/extracts/concentrates \u2192 Not Sure.'
+    }},
+    { key: '7', label: '일반 가전', value: 'General consumer electronics. No restriction', tooltip: {
+      ko: '의료기기가 아닌 일반 가전제품.\n주의: 혈압계, 혈당계, 체온계 등은 의료기기 \u2192 Fail.',
+      en: 'Consumer electronics, not medical devices.\nNote: \ud608\uc555\uacc4, \ud608\ub2f9\uacc4, \uccb4\uc628\uacc4 \u2192 Medical device (Fail).'
+    }},
     { key: '8', label: '기타 (업종)', value: null, isCustom: true },
   ];
 
   const FAIL_IMAGE_REASONS = [
-    { key: '1', label: '텍스트 >50%', value: 'Text covers >50% of image area' },
-    { key: '2', label: '로고/배지/텍스트', value: 'External logo/badge/text overlay outside product' },
-    { key: '3', label: '비흰색 BG', value: 'Background is not #FFFFFF' },
-    { key: '4', label: '이미지가 너무 작음', value: 'Image resolution too small' },
-    { key: '5', label: '컬러심볼', value: 'Color symbol present in image' },
-    { key: '6', label: '로드 실패', value: 'Image failed to load or broken' },
+    { key: '1', label: '텍스트 >50%', value: 'Text covers >50% of image area', tooltip: {
+      ko: '이미지 면적의 50% 이상이 텍스트로 채워진 경우.\n패키징 인쇄 텍스트도 포함하여 면적 기준 판단.',
+      en: 'More than 50% of image area covered by text.\nIncludes packaging printed text.'
+    }},
+    { key: '2', label: '로고/배지/텍스트', value: 'External logo/badge/text overlay outside product', tooltip: {
+      ko: '상품 외부에 로고, 배지, 인증마크, 프로모션 텍스트 존재.\n테두리 30% 영역(상하좌우) 내 텍스트도 해당.',
+      en: 'Logos, badges, marks, or promo text outside product.\nIncludes text within 30% border zones.'
+    }},
+    { key: '3', label: '비흰색 BG', value: 'Background is not #FFFFFF', tooltip: {
+      ko: '배경이 순수 흰색(#FFFFFF)이 아닌 경우.\n밝은 회색, 베이지, 그라데이션, 패턴 모두 부적합.',
+      en: 'Background is not pure white (#FFFFFF).\nLight gray, beige, gradients, patterns all fail.'
+    }},
+    { key: '4', label: '이미지가 너무 작음', value: 'Image resolution too small', tooltip: {
+      ko: '저해상도, 합성, 왜곡, 블러 등 고품질 기준 미달.',
+      en: 'Low resolution, composited, distorted, or blurred.'
+    }},
+    { key: '5', label: '컬러심볼', value: 'Color symbol present in image', tooltip: {
+      ko: '원색/형광색 등 비즈보드에서 금지하는 색상 요소 포함.',
+      en: 'Contains primary/fluorescent colors prohibited by BizBoard.'
+    }},
+    { key: '6', label: '로드 실패', value: 'Image failed to load or broken', tooltip: {
+      ko: '이미지 다운로드 실패 또는 깨짐/손상.\n확인 불가 = 검수 불가.',
+      en: 'Image download failed or broken/corrupted.\nCannot verify = cannot approve.'
+    }},
     { key: '7', label: '기타 (이미지)', value: null, isCustom: true },
   ];
 
   const FAIL_VERTICAL_REASONS = [
-    { key: 'Q', label: '건강기능식품', value: 'Health functional food. External DSP cannot verify' },
-    { key: 'W', label: '의약품/의료기기', value: 'Medical product/device. Requires documentation' },
-    { key: 'E', label: '성인/도박/담배', value: 'Kakao platform banned category' },
-    { key: 'R', label: '주류', value: 'Alcohol product. Prohibited on BizBoard' },
-    { key: 'T', label: '속옷/수영복', value: 'Underwear/swimwear. Platform inappropriate' },
-    { key: 'Y', label: '귀금속/투자', value: 'Precious metals/investment product' },
+    { key: 'Q', label: '건강기능식품', value: 'Health functional food. External DSP cannot verify', tooltip: {
+      ko: '외부 DSP는 서류 검토 시스템이 없어 심사 불가.\n\n키워드: 비타민, 유산균, 콜라겐, 홍삼, 오메가3, 루테인, 밀크씨슬, 프로바이오틱스, 글루코사민, 아르기닌...\n\n예외: 즙/진액/농축액(양배추즙, 석류즙 등)은 Not Sure',
+      en: 'External DSP has no document review system.\n\nKeywords: \ube44\ud0c0\ubbfc, \uc720\uc0b0\uade0, \ucf5c\ub77c\uac90, \ud64d\uc0bc, \uc624\uba54\uac003, \ub8e8\ud14c\uc778, \ubc00\ud06c\uc528\uc2ac, \ud504\ub85c\ubc14\uc774\uc624\ud2f1\uc2a4...\n\nExclusion: Juices/extracts (\uc591\ubc30\ucd94\uc999, \uc11d\ub958\uc999) \u2192 Not Sure'
+    }},
+    { key: 'W', label: '의약품/의료기기', value: 'Medical product/device. Requires documentation', tooltip: {
+      ko: '서류 심사 필수 업종.\n\n키워드: 혈압계, 혈당계, 보청기, 콘택트렌즈, 체온계, 네뷸라이저, 물리치료기...\n\n예외: 밴드(헤어밴드, 고무밴드), 파스(파스타, 파스쿠찌) 등은 제외',
+      en: 'Requires document review.\n\nKeywords: \ud608\uc555\uacc4, \ud608\ub2f9\uacc4, \ubcf4\uccad\uae30, \ucf58\ud0dd\ud2b8\ub80c\uc988, \uccb4\uc628\uacc4, \ub124\ubdf8\ub77c\uc774\uc800...\n\nExclusion: \ubc34\ub4dc (hair band, rubber band), \ud30c\uc2a4 (pasta, Pascucci) excluded'
+    }},
+    { key: 'E', label: '성인/도박/담배', value: 'Kakao platform banned category', tooltip: {
+      ko: '카카오 플랫폼 공통 금지 업종.\n\n키워드: 성인용품, 카지노, 전자담배, 니코틴, 가상화폐, 대부업, 소개팅앱...\n\n예외: 시가(출시가, 시가총액), 쥴(스케쥴) 등은 제외',
+      en: 'Kakao platform banned category.\n\nKeywords: \uc131\uc778\uc6a9\ud488, \uce74\uc9c0\ub178, \uc804\uc790\ub2f4\ubc30, \ub2c8\ucf54\ud2f4, \uac00\uc0c1\ud654\ud3d0, \ub300\ubd80\uc5c5...\n\nExclusion: \uc2dc\uac00 (\ucd9c\uc2dc\uac00/\uc2dc\uac00\ucd1d\uc561), \ucab8 (\uc2a4\ucf00\ucab8) excluded'
+    }},
+    { key: 'R', label: '주류', value: 'Alcohol product. Prohibited on BizBoard', tooltip: {
+      ko: '카카오 비즈보드 금지.\n\n키워드: 소주, 위스키, 맥주, 와인, 막걸리, 사케, 하이볼, 리큐르...\n\n예외: 맥주효모, 와인잔, 와인색, 칵테일새우, 칵테일소스 등은 제외',
+      en: 'Prohibited on BizBoard.\n\nKeywords: \uc18c\uc8fc, \uc704\uc2a4\ud0a4, \ub9e5\uc8fc, \uc640\uc778, \ub9c9\uac78\ub9ac, \uc0ac\ucf00, \ud558\uc774\ubcfc, \ub9ac\ud050\ub974...\n\nExclusion: \ub9e5\uc8fc\ud6a8\ubaa8, \uc640\uc778\uc794, \uc640\uc778\uc0c9, \uce75\ud14c\uc77c\uc0c8\uc6b0, \uce75\ud14c\uc77c\uc18c\uc2a4 excluded'
+    }},
+    { key: 'T', label: '속옷/수영복', value: 'Underwear/swimwear. Platform inappropriate', tooltip: {
+      ko: '비즈보드 소재 가이드라인 부적합. 여성위생용품 포함.\n\n키워드: 브라렛, 팬티, 비키니, 래쉬가드, 캐미솔, 생리대, 탐폰...\n\n예외: 브라운, 브라켓, 브라질, 팬티호스 등은 제외',
+      en: 'Platform inappropriate. Includes feminine hygiene.\n\nKeywords: \ube0c\ub77c\ub81b, \ud32c\ud2f0, \ube44\ud0a4\ub2c8, \ub798\uc26c\uac00\ub4dc, \uce90\ubbf8\uc194, \uc0dd\ub9ac\ub300, \ud0d0\ud3f0...\n\nExclusion: \ube0c\ub77c\uc6b4, \ube0c\ub77c\ucf13, \ube0c\ub77c\uc9c8, \ud32c\ud2f0\ud638\uc2a4 excluded'
+    }},
+    { key: 'Y', label: '귀금속/투자', value: 'Precious metals/investment product', tooltip: {
+      ko: '투자성 상품으로 광고 부적합.\n\n키워드: 골드바, 금화, 실버바, 순금, 투자용, 재테크...\n\n예외: 순금 화장품(앰플, 에센스)은 제외. 한국금거래소 \u2192 전수 Reject',
+      en: 'Investment products. Not suitable for ads.\n\nKeywords: \uace8\ub4dc\ubc14, \uae08\ud654, \uc2e4\ubc84\ubc14, \uc21c\uae08, \ud22c\uc790\uc6a9, \uc7ac\ud14c\ud06c...\n\nExclusion: \uc21c\uae08 cosmetics excluded. \ud55c\uad6d\uae08\uac70\ub798\uc18c \u2192 always Reject'
+    }},
     { key: 'U', label: '기타 규제업종', value: null, isCustom: true },
   ];
 
@@ -398,6 +446,29 @@ const Review = (() => {
     panel.appendChild(agreeBtn);
   }
 
+  function getTooltipText(tooltip) {
+    if (!tooltip) return '';
+    const lang = I18n.getLang();
+    return (lang === 'en' && tooltip.en) ? tooltip.en : tooltip.ko;
+  }
+
+  function createTooltipIcon(tooltip) {
+    const helpIcon = document.createElement('span');
+    helpIcon.className = 'reason-help-icon';
+    helpIcon.textContent = '?';
+
+    const tooltipEl = document.createElement('span');
+    tooltipEl.className = 'reason-tooltip';
+    tooltipEl.textContent = getTooltipText(tooltip);
+    helpIcon.appendChild(tooltipEl);
+
+    helpIcon.addEventListener('mouseenter', () => tooltipEl.classList.add('show'));
+    helpIcon.addEventListener('mouseleave', () => tooltipEl.classList.remove('show'));
+    helpIcon.addEventListener('click', (e) => { e.stopPropagation(); });
+
+    return helpIcon;
+  }
+
   function createReasonButton(reason, category, selectedClass) {
     const btn = document.createElement('button');
     btn.className = 'reason-btn';
@@ -406,6 +477,10 @@ const Review = (() => {
     btn.dataset.value = reason.value || '';
     btn.dataset.isCustom = reason.isCustom ? 'true' : 'false';
     btn.innerHTML = `<kbd>${reason.key}</kbd> ${I18n.tLabel(reason.label)}`;
+
+    if (reason.tooltip) {
+      btn.appendChild(createTooltipIcon(reason.tooltip));
+    }
 
     btn.addEventListener('click', () => {
       if (reason.isCustom) {
@@ -728,23 +803,37 @@ const Review = (() => {
     guide.className = 'quick-fail-guide';
 
     const keys = [
-      { key: 'Z', label: FAIL_IMAGE_REASONS[0].label },
-      { key: 'X', label: FAIL_IMAGE_REASONS[1].label },
-      { key: 'C', label: FAIL_IMAGE_REASONS[2].label },
-      { key: 'V', label: FAIL_VERTICAL_REASONS[0].label },
-      { key: 'B', label: FAIL_VERTICAL_REASONS[1].label },
-      { key: 'N', label: FAIL_IMAGE_REASONS[3].label },
-      { key: 'M', label: FAIL_IMAGE_REASONS[4].label },
+      { key: 'Z', label: FAIL_IMAGE_REASONS[0].label, tooltip: FAIL_IMAGE_REASONS[0].tooltip },
+      { key: 'X', label: FAIL_IMAGE_REASONS[1].label, tooltip: FAIL_IMAGE_REASONS[1].tooltip },
+      { key: 'C', label: FAIL_IMAGE_REASONS[2].label, tooltip: FAIL_IMAGE_REASONS[2].tooltip },
+      { key: 'V', label: FAIL_VERTICAL_REASONS[0].label, tooltip: FAIL_VERTICAL_REASONS[0].tooltip },
+      { key: 'B', label: FAIL_VERTICAL_REASONS[1].label, tooltip: FAIL_VERTICAL_REASONS[1].tooltip },
+      { key: 'N', label: FAIL_IMAGE_REASONS[3].label, tooltip: FAIL_IMAGE_REASONS[3].tooltip },
+      { key: 'M', label: FAIL_IMAGE_REASONS[4].label, tooltip: FAIL_IMAGE_REASONS[4].tooltip },
     ];
 
-    guide.innerHTML =
-      `<div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">${I18n.t('quickFail.title')}</div>` +
-      '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
-      keys.map(k =>
-        `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#fff;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;color:#555;">` +
-        `<span style="display:inline-block;min-width:20px;text-align:center;padding:1px 6px;background:#e74c3c;color:#fff;border-radius:4px;font-size:11px;font-weight:700;">${k.key}</span> ${I18n.tLabel(k.label)}</span>`
-      ).join('') +
-      '</div>';
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;';
+    title.textContent = I18n.t('quickFail.title');
+    guide.appendChild(title);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
+
+    keys.forEach(k => {
+      const chip = document.createElement('span');
+      chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#fff;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;color:#555;position:relative;';
+      chip.innerHTML =
+        `<span style="display:inline-block;min-width:20px;text-align:center;padding:1px 6px;background:#e74c3c;color:#fff;border-radius:4px;font-size:11px;font-weight:700;">${k.key}</span> ${I18n.tLabel(k.label)}`;
+
+      if (k.tooltip) {
+        chip.appendChild(createTooltipIcon(k.tooltip));
+      }
+
+      row.appendChild(chip);
+    });
+
+    guide.appendChild(row);
 
     const reviewPanel = document.getElementById('review-panel');
     reviewPanel.insertBefore(guide, reviewPanel.firstChild);
