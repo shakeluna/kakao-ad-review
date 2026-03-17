@@ -9,7 +9,10 @@ const Review = (() => {
       ko: '순수 흰색(#FFFFFF) 배경 + 상품 단독 촬영.\n텍스트/로고/배지/프로모션 없음. 텍스트 50% 미만.',
       en: 'Pure white (#FFFFFF) background + single product.\nNo text/logos/badges/promotions. Text under 50%.'
     }},
-    { key: '2', label: '기타 (이미지)', value: null, isCustom: true },
+    { key: '2', label: '기타 (이미지)', value: null, isCustom: true, tooltip: {
+      ko: '위 항목에 해당하지 않는 이미지 사유가 있을 때 직접 입력.',
+      en: 'Enter a custom image reason not listed above.'
+    }},
   ];
 
   const PASS_VERTICAL_REASONS = [
@@ -25,7 +28,10 @@ const Review = (() => {
       ko: '의료기기가 아닌 일반 가전제품.\n주의: 혈압계, 혈당계, 체온계 등은 의료기기 \u2192 Fail.',
       en: 'Consumer electronics, not medical devices.\nNote: \ud608\uc555\uacc4, \ud608\ub2f9\uacc4, \uccb4\uc628\uacc4 \u2192 Medical device (Fail).'
     }},
-    { key: '8', label: '기타 (업종)', value: null, isCustom: true },
+    { key: '8', label: '기타 (업종)', value: null, isCustom: true, tooltip: {
+      ko: '위 항목에 해당하지 않는 업종 사유가 있을 때 직접 입력.',
+      en: 'Enter a custom vertical reason not listed above.'
+    }},
   ];
 
   const FAIL_IMAGE_REASONS = [
@@ -53,7 +59,10 @@ const Review = (() => {
       ko: '이미지 다운로드 실패 또는 깨짐/손상.\n확인 불가 = 검수 불가.',
       en: 'Image download failed or broken/corrupted.\nCannot verify = cannot approve.'
     }},
-    { key: '7', label: '기타 (이미지)', value: null, isCustom: true },
+    { key: '7', label: '기타 (이미지)', value: null, isCustom: true, tooltip: {
+      ko: '위 항목에 해당하지 않는 이미지 Fail 사유가 있을 때 직접 입력.',
+      en: 'Enter a custom image fail reason not listed above.'
+    }},
   ];
 
   const FAIL_VERTICAL_REASONS = [
@@ -81,7 +90,10 @@ const Review = (() => {
       ko: '투자성 상품으로 광고 부적합.\n\n키워드: 골드바, 금화, 실버바, 순금, 투자용, 재테크...\n\n예외: 순금 화장품(앰플, 에센스)은 제외. 한국금거래소 \u2192 전수 Reject',
       en: 'Investment products. Not suitable for ads.\n\nKeywords: \uace8\ub4dc\ubc14, \uae08\ud654, \uc2e4\ubc84\ubc14, \uc21c\uae08, \ud22c\uc790\uc6a9, \uc7ac\ud14c\ud06c...\n\nExclusion: \uc21c\uae08 cosmetics excluded. \ud55c\uad6d\uae08\uac70\ub798\uc18c \u2192 always Reject'
     }},
-    { key: 'U', label: '기타 규제업종', value: null, isCustom: true },
+    { key: 'U', label: '기타 규제업종', value: null, isCustom: true, tooltip: {
+      ko: '위 항목에 해당하지 않는 규제 업종 사유가 있을 때 직접 입력.\n예: 정치/종교, 논문대행, 게임아이템거래 등.',
+      en: 'Enter a custom regulated industry reason not listed above.\nEx: Politics/religion, essay ghostwriting, game item trading, etc.'
+    }},
   ];
 
   // === Auto-save Timer ===
