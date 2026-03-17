@@ -734,8 +734,10 @@ const Review = (() => {
       { key: 'Z', label: FAIL_IMAGE_REASONS[0].label },
       { key: 'X', label: FAIL_IMAGE_REASONS[1].label },
       { key: 'C', label: FAIL_IMAGE_REASONS[2].label },
-      { key: 'V', label: FAIL_IMAGE_REASONS[3].label },
-      { key: 'B', label: FAIL_IMAGE_REASONS[4].label },
+      { key: 'V', label: FAIL_VERTICAL_REASONS[0].label },
+      { key: 'B', label: FAIL_VERTICAL_REASONS[1].label },
+      { key: 'N', label: FAIL_IMAGE_REASONS[3].label },
+      { key: 'M', label: FAIL_IMAGE_REASONS[4].label },
     ];
 
     guide.innerHTML =
@@ -753,14 +755,24 @@ const Review = (() => {
 
   // === Quick Fail (Ctrl+1~5) ===
 
-  function quickFail(reasonIndex) {
-    const reason = FAIL_IMAGE_REASONS[reasonIndex];
-    if (!reason) return;
+  function quickFail(type, reasonIndex) {
+    let imageReason = null;
+    let verticalReason = null;
+
+    if (type === 'image') {
+      const reason = FAIL_IMAGE_REASONS[reasonIndex];
+      if (!reason) return;
+      imageReason = reason.value;
+    } else if (type === 'vertical') {
+      const reason = FAIL_VERTICAL_REASONS[reasonIndex];
+      if (!reason) return;
+      verticalReason = reason.value;
+    }
 
     clearAutoSaveTimer();
     AppState.currentVerdict = 'Fail';
-    AppState.selectedImageReason = reason.value;
-    AppState.selectedVerticalReason = null;
+    AppState.selectedImageReason = imageReason;
+    AppState.selectedVerticalReason = verticalReason;
 
     renderHumanPanel();
     if (saveCurrentVerdict()) {

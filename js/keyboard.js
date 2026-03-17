@@ -20,12 +20,21 @@ document.addEventListener('keydown', (e) => {
   const keyUpper = key.toUpperCase();
   const mode = AppState.keyboardMode;
 
-  // Z/X/C/V/B: Quick Fail shortcuts (nav/pass_reason/fail_reason, no modifiers)
+  // Z/X/C/V/B/N/M: Quick Fail shortcuts (nav/pass_reason/fail_reason, no modifiers)
   if (!e.ctrlKey && !e.altKey && !e.shiftKey && mode !== 'modal') {
-    const quickFailMap = { 'Z': 0, 'X': 1, 'C': 2, 'V': 3, 'B': 4 };
+    const quickFailMap = {
+      'Z': { type: 'image', index: 0 },    // 텍스트 >50%
+      'X': { type: 'image', index: 1 },    // 로고/배지/텍스트
+      'C': { type: 'image', index: 2 },    // 비흰색 BG
+      'V': { type: 'vertical', index: 0 }, // 건강기능식품
+      'B': { type: 'vertical', index: 1 }, // 의약품/의료기기
+      'N': { type: 'image', index: 3 },    // 이미지가 너무 작음
+      'M': { type: 'image', index: 4 },    // 컬러심볼
+    };
     if (keyUpper in quickFailMap) {
       e.preventDefault();
-      Review.quickFail(quickFailMap[keyUpper]);
+      const mapping = quickFailMap[keyUpper];
+      Review.quickFail(mapping.type, mapping.index);
       return;
     }
   }
