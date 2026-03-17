@@ -739,9 +739,12 @@ const Review = (() => {
     ];
 
     guide.innerHTML =
-      '<div class="quick-fail-title">빠른 Fail</div>' +
-      '<div class="quick-fail-keys">' +
-      keys.map(k => `<span class="quick-fail-item"><kbd>${k.key}</kbd> ${k.label}</span>`).join('') +
+      '<div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:6px;">빠른 Fail</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+      keys.map(k =>
+        `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:#fff;border:1px solid #e0e0e0;border-radius:5px;font-size:12px;color:#555;">` +
+        `<span style="display:inline-block;min-width:20px;text-align:center;padding:1px 6px;background:#e74c3c;color:#fff;border-radius:4px;font-size:11px;font-weight:700;">${k.key}</span> ${k.label}</span>`
+      ).join('') +
       '</div>';
 
     const reviewPanel = document.getElementById('review-panel');
