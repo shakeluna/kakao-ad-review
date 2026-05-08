@@ -180,76 +180,6 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// === Excel Upload → Google Sheets ===
-
-function handleExcelUpload(file) {
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const rawRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-
-      if (rawRows.length === 0) {
-        showToast(I18n.t('toast.emptyFile'));
-        return;
-      }
-
-      const items = rawRows.map(normalizeRow);
-      showToast(I18n.t('toast.parsed', { count: items.length }));
-
-      const isAppend = AppState.items.length > 0;
-      let itemsToUpload = items;
-      let mergedItems = items;
-
-      if (isAppend) {
-        const existingIds = new Set(AppState.items.map(i => i.identifier));
-        const newItems = items.filter(i => !existingIds.has(i.identifier));
-
-        if (newItems.length === 0) {
-          showToast(I18n.t('toast.noDuplicates'));
-          return;
-        }
-
-        if (newItems.length < items.length) {
-          showToast(I18n.t('toast.duplicatesSkipped', {
-            added: newItems.length,
-            skipped: items.length - newItems.length
-          }));
-        }
-
-        itemsToUpload = newItems;
-        mergedItems = [...AppState.items, ...newItems];
-      }
-
-      // Upload to Google Sheets if configured
-      if (SheetsAPI.isConfigured()) {
-        try {
-          await SheetsAPI.uploadData(itemsToUpload, isAppend);
-          showToast(I18n.t(isAppend ? 'toast.appendComplete' : 'toast.uploadComplete', { count: itemsToUpload.length }));
-        } catch (err) {
-          console.error('Sheets upload failed:', err);
-          showToast(I18n.t('toast.uploadFail'));
-        }
-      }
-
-      // Update state (merge or replace)
-      AppState.items = mergedItems;
-      await Storage.saveAllItems(mergedItems);
-      Storage.saveSession('lastUploadFilename', file.name);
-      document.getElementById('current-filename').textContent = file.name;
-      applyFilters();
-      showDataUI();
-    } catch (err) {
-      console.error('Excel parse error:', err);
-      showToast(I18n.t('toast.parseFail') + err.message);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
 // === Load Data from Sheets ===
 
 async function loadFromSheets() {
@@ -461,32 +391,6 @@ async function initApp() {
     showDataUI();
     showToast(I18n.t('toast.restored'));
   }
-
-  // File upload (Excel → parse → Sheets)
-  const uploadLabel = document.getElementById('upload-label');
-  const excelInput = document.getElementById('excel-upload');
-
-  uploadLabel.addEventListener('click', () => {
-    excelInput.click();
-  });
-
-  excelInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) handleExcelUpload(file);
-    excelInput.value = '';
-  });
-
-  // Dropzone
-  const dropzone = document.getElementById('dropzone');
-  dropzone.addEventListener('click', () => excelInput.click());
-  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) handleExcelUpload(file);
-  });
 
   // Navigation buttons
   document.getElementById('btn-prev').addEventListener('click', goPrev);

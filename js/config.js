@@ -2,7 +2,7 @@
 
 const Config = {
   // Google Apps Script Web App URL (배포 후 여기에 입력)
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyjVoocPUi0hM4yi-xeloPDC-v7zD1k8Yq5BSVAJIcqC143zkxyWuJXEmyNOuAd43PQ/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxDJWLpGePg4r9MKvjd2lBPp4vBFCwAfykNcSHaC7SpxlUzxCKhWs3bCd8vzGUsH7Tx/exec',
 
   // Secret token (Code.gs의 SECRET_TOKEN과 동일해야 함)
   SECRET_TOKEN: 'adreview2026',

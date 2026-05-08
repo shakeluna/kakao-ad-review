@@ -95,10 +95,6 @@
     <span class="sync-status sync-disconnected" id="sync-status">오프라인</span>
     <span class="queue-badge" id="queue-count"></span>
     <span class="current-filename" id="current-filename"></span>
-    <input type="file" id="excel-upload" accept=".xlsx,.xls,.csv" hidden>
-    <button class="upload-btn" id="upload-label" type="button">
-      <span data-i18n="upload.btn">Excel 업로드</span>
-    </button>
   </div>
   <div class="header-center">
     <select id="advertiser-filter">
@@ -133,12 +129,11 @@
   <div class="progress-stats" id="progress-stats" data-i18n="progress.upload">데이터를 업로드하세요</div>
 </div>
 
-<!-- Upload Prompt (shown when no data) -->
+<!-- No-data Prompt (shown when no data) -->
 <div id="upload-prompt">
-  <div class="upload-dropzone" id="dropzone">
-    <p class="dropzone-icon">📂</p>
-    <p class="dropzone-text" data-i18n="upload.dropText">Excel 파일을 드래그하거나 클릭하여 업로드</p>
-    <p class="dropzone-hint" data-i18n="upload.dropHint">.xlsx, .xls, .csv 파일 지원</p>
+  <div class="no-data-prompt">
+    <p class="dropzone-icon">📊</p>
+    <p class="dropzone-text" data-i18n="progress.empty">데이터 없음</p>
   </div>
 </div>
 
@@ -245,7 +240,6 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/storage.js"></script>
