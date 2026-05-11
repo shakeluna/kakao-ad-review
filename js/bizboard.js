@@ -2,6 +2,21 @@
 
 const BizBoard = (() => {
 
+  // === Local image cache (e-himart 등 느린 origin 회피) ===
+  // images/url_map.json: { 원본URL: "해시.jpg" }
+  let urlMap = {};
+  fetch('images/url_map.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : {})
+    .then(m => { urlMap = m || {}; })
+    .catch(() => { urlMap = {}; });
+
+  function toLocalUrl(url) {
+    if (!url) return url;
+    const fname = urlMap[url];
+    if (!fname) return url;
+    return 'images/' + fname;
+  }
+
   // Advertiser short name mapping
   const ADV_SHORT = {
     'KR_LotteON': 'LOTTE ON',
@@ -36,8 +51,17 @@ const BizBoard = (() => {
     const img = container.querySelector('img');
 
     if (url) {
-      img.src = url;
+      const localUrl = toLocalUrl(url);
+      img.src = localUrl;
       img.onerror = function() {
+        // 로컬 캐시 실패 시 원본으로 fallback
+        if (localUrl !== url) {
+          img.onerror = function() {
+            container.innerHTML = '<div class="img-placeholder">이미지 로드 실패</div>';
+          };
+          img.src = url;
+          return;
+        }
         container.innerHTML = '<div class="img-placeholder">이미지 로드 실패</div>';
       };
     } else {
@@ -61,8 +85,16 @@ const BizBoard = (() => {
       desktopThumbContainer.innerHTML = '<img id="bb-thumbnail" src="" alt="썸네일">';
       const img = desktopThumbContainer.querySelector('img');
       if (item.url) {
-        img.src = item.url;
+        const localUrl = toLocalUrl(item.url);
+        img.src = localUrl;
         img.onerror = () => {
+          if (localUrl !== item.url) {
+            img.onerror = () => {
+              desktopThumbContainer.innerHTML = '<div class="img-placeholder">이미지 로드 실패</div>';
+            };
+            img.src = item.url;
+            return;
+          }
           desktopThumbContainer.innerHTML = '<div class="img-placeholder">이미지 로드 실패</div>';
         };
       } else {
@@ -81,8 +113,16 @@ const BizBoard = (() => {
       mobileThumbContainer.innerHTML = '<img id="bb-thumbnail-m" src="" alt="썸네일">';
       const imgM = mobileThumbContainer.querySelector('img');
       if (item.url) {
-        imgM.src = item.url;
+        const localUrlM = toLocalUrl(item.url);
+        imgM.src = localUrlM;
         imgM.onerror = () => {
+          if (localUrlM !== item.url) {
+            imgM.onerror = () => {
+              mobileThumbContainer.innerHTML = '<div class="img-placeholder">로드 실패</div>';
+            };
+            imgM.src = item.url;
+            return;
+          }
           mobileThumbContainer.innerHTML = '<div class="img-placeholder">로드 실패</div>';
         };
       } else {
@@ -109,7 +149,7 @@ const BizBoard = (() => {
       const item = AppState.filteredItems[i];
       if (item && item.url) {
         const img = new Image();
-        img.src = item.url;
+        img.src = toLocalUrl(item.url);
       }
     }
   }
