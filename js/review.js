@@ -263,57 +263,6 @@ const Review = (() => {
     reviewPanel.insertBefore(btn, reviewPanel.firstChild);
   }
 
-  // === AI Panel Rendering ===
-
-  function renderAIPanel(item) {
-    if (!item) return;
-
-    // Final result badge
-    const finalBadge = document.getElementById('ai-final-badge');
-    const finalResult = item.Claude_Final_Result || '';
-    finalBadge.textContent = finalResult || '-';
-    finalBadge.className = 'ai-badge ' + getBadgeClass(finalResult, 'result');
-
-    // Packshot badge
-    const pshotBadge = document.getElementById('ai-packshot-badge');
-    const pshot = item.Packshot || '';
-    pshotBadge.textContent = 'Packshot ' + (pshot || '-');
-    pshotBadge.className = 'ai-badge ' + getBadgeClass(pshot, 'packshot');
-
-    // BG badge
-    const bgBadge = document.getElementById('ai-bg-badge');
-    const bg = item.BG_White || '';
-    bgBadge.textContent = 'BG ' + (bg || '-');
-    bgBadge.className = 'ai-badge ' + getBadgeClass(bg, 'bg');
-
-    // Details
-    document.getElementById('ai-vertical').textContent = item.Claude_vertical_review_results || '-';
-    document.getElementById('ai-vertical-reason').textContent = item.Claude_Vertical_reason || '-';
-    document.getElementById('ai-packshot-reason').textContent = item.Claude_Packshot_Reason || '-';
-  }
-
-  function getBadgeClass(value, type) {
-    if (!value) return 'error';
-    const v = String(value).toLowerCase().trim();
-
-    if (type === 'result') {
-      if (v === 'pass') return 'pass';
-      if (v === 'fail') return 'fail';
-      return 'error';
-    }
-    if (type === 'packshot') {
-      if (v === 'o') return 'pass';
-      if (v === 'x') return 'fail';
-      return 'error';
-    }
-    if (type === 'bg') {
-      if (v === 'white') return 'pass';
-      if (v === 'notwhite' || v === 'not white') return 'fail';
-      return 'error';
-    }
-    return 'error';
-  }
-
   // === Review Panel ===
 
   function renderReviewPanel(item) {
@@ -332,25 +281,6 @@ const Review = (() => {
       } else if (item.Human_Result === 'Fail') {
         document.getElementById('btn-fail').classList.add('reviewed-fail');
       }
-    }
-
-    // Match indicator
-    updateMatchIndicator(item);
-  }
-
-  function updateMatchIndicator(item) {
-    const el = document.getElementById('verdict-match');
-    if (!item || !item.Human_Result) {
-      el.textContent = '';
-      el.className = 'verdict-match';
-      return;
-    }
-    if (item.Claude_Final_Result === item.Human_Result) {
-      el.textContent = I18n.t('match.agree');
-      el.className = 'verdict-match match';
-    } else {
-      el.textContent = I18n.t('match.disagree');
-      el.className = 'verdict-match mismatch';
     }
   }
 
@@ -448,14 +378,6 @@ const Review = (() => {
     });
     vertCat.appendChild(vertGrid);
     panel.appendChild(vertCat);
-
-    // AI Agree button
-    const agreeKey = verdictType === 'pass' ? '9' : '0';
-    const agreeBtn = document.createElement('button');
-    agreeBtn.className = 'reason-btn ai-agree';
-    agreeBtn.innerHTML = `<kbd>${agreeKey}</kbd> ${I18n.t('reason.aiAgree')}`;
-    agreeBtn.addEventListener('click', () => aiAgree());
-    panel.appendChild(agreeBtn);
   }
 
   function getTooltipText(tooltip) {
@@ -540,26 +462,6 @@ const Review = (() => {
     goNext();
   }
 
-  function aiAgree() {
-    const item = AppState.filteredItems[AppState.currentIndex];
-    if (!item) return;
-
-    // Copy AI reasons
-    AppState.selectedImageReason = item.Claude_Packshot_Reason || item.Packshot || 'AI Agree';
-    AppState.selectedVerticalReason = item.Claude_Vertical_reason || item.Claude_vertical_review_results || 'AI Agree';
-
-    // Clear individual reason highlights, highlight AI agree button
-    const panel = document.getElementById('reason-panel');
-    panel.querySelectorAll('.reason-btn[data-category]').forEach(btn => {
-      btn.classList.remove('selected-pass', 'selected-fail');
-    });
-    const agreeBtn = panel.querySelector('.ai-agree');
-    if (agreeBtn) agreeBtn.classList.add(AppState.currentVerdict === 'Pass' ? 'selected-pass' : 'selected-fail');
-
-    renderHumanPanel();
-    startAutoSaveTimer();
-  }
-
   function saveCurrentVerdict() {
     if (!AppState.currentVerdict) return false;
     if (!AppState.selectedImageReason && !AppState.selectedVerticalReason) {
@@ -578,8 +480,6 @@ const Review = (() => {
       Human_Result: AppState.currentVerdict,
       Human_Image_Reason: AppState.selectedImageReason || '',
       Human_Vertical_Reason: AppState.selectedVerticalReason || '',
-      Human_Custom_Reason: '',
-      AI_Human_Match: item.Claude_Final_Result ? (item.Claude_Final_Result === AppState.currentVerdict) : '',
       reviewed_at: new Date().toISOString(),
     };
 
@@ -753,7 +653,6 @@ const Review = (() => {
       selectReason('vertical', vertReason.value, vertReason.key, selectedClass);
       return;
     }
-    if (key === '9') { aiAgree(); return; }
   }
 
   function handleFailReasonKey(key) {
@@ -784,7 +683,6 @@ const Review = (() => {
       selectReason('vertical', vertReason.value, vertReason.key, selectedClass);
       return;
     }
-    if (key === '0') { aiAgree(); return; }
   }
 
   // Listen for index changes to render review panel

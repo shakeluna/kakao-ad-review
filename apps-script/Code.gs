@@ -209,8 +209,7 @@ function handleReview(body) {
 
   // Ensure review columns exist in Target
   var reviewCols = [
-    'Human_Result', 'Human_Image_Reason', 'Human_Vertical_Reason',
-    'Human_Custom_Reason', 'AI_Human_Match', 'reviewed_at'
+    'Human_Result', 'Human_Image_Reason', 'Human_Vertical_Reason', 'reviewed_at'
   ];
 
   var headersChanged = false;

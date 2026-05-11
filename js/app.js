@@ -12,7 +12,7 @@ const AppState = {
   currentFilter: 'all',
 };
 
-// Column name normalization map
+// Column name normalization map (sheet columns only)
 const COLUMN_MAP = {
   'adv': 'advertiser',
   'advertiser': 'advertiser',
@@ -21,24 +21,9 @@ const COLUMN_MAP = {
   'adcopy': 'adCopy',
   'adCopy': 'adCopy',
   'url': 'url',
-  'char_length': 'char_length',
-  'Final_Result': 'Claude_Final_Result',
-  'Claude_Final_Result': 'Claude_Final_Result',
-  'review_results': 'Claude_vertical_review_results',
-  'vertical_review_results': 'Claude_vertical_review_results',
-  'Claude_vertical_review_results': 'Claude_vertical_review_results',
-  'reason': 'Claude_Vertical_reason',
-  'Claude_Vertical_reason': 'Claude_Vertical_reason',
-  'Packshot': 'Packshot',
-  'Packshot_Reason': 'Claude_Packshot_Reason',
-  'Claude_Packshot_Reason': 'Claude_Packshot_Reason',
-  'bg_status': 'BG_White',
-  'BG_White': 'BG_White',
   'Human_Result': 'Human_Result',
   'Human_Image_Reason': 'Human_Image_Reason',
   'Human_Vertical_Reason': 'Human_Vertical_Reason',
-  'Human_Custom_Reason': 'Human_Custom_Reason',
-  'AI_Human_Match': 'AI_Human_Match',
   'reviewed_at': 'reviewed_at',
 };
 

@@ -7,12 +7,11 @@ const SheetsAPI = (() => {
   let connectionStatus = 'disconnected';
 
   const DATA_HEADERS = [
-    'advertiser', 'identifier', 'name', 'adCopy', 'url', 'char_length',
-    'Claude_Final_Result', 'Claude_vertical_review_results', 'Claude_Vertical_reason',
-    'Packshot', 'Claude_Packshot_Reason', 'BG_White',
-    'Human_Result', 'Human_Image_Reason', 'Human_Vertical_Reason',
-    'Human_Custom_Reason', 'AI_Human_Match', 'reviewed_at',
+    'advertiser', 'identifier', 'name', 'adcopy', 'url',
+    'Human_Result', 'Human_Image_Reason', 'Human_Vertical_Reason', 'reviewed_at',
   ];
+
+  const HEADER_ITEM_KEY = { adcopy: 'adCopy' };
 
   // === Status Management ===
 
@@ -86,7 +85,8 @@ const SheetsAPI = (() => {
     // Convert items to row arrays
     const rows = items.map(item =>
       DATA_HEADERS.map(h => {
-        const val = item[h];
+        const key = HEADER_ITEM_KEY[h] || h;
+        const val = item[key];
         if (val === undefined || val === null) return '';
         if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
         return val;

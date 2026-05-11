@@ -95,7 +95,6 @@ const BizBoard = (() => {
     document.getElementById('info-advertiser').textContent = item.advertiser || '';
     document.getElementById('info-name').textContent = item.name || '';
     document.getElementById('info-adcopy').textContent = item.adCopy || '';
-    document.getElementById('info-charlength').textContent = item.char_length || '';
     const urlEl = document.getElementById('info-url');
     urlEl.href = item.url || '#';
     urlEl.textContent = item.url ? (item.url.length > 50 ? item.url.substring(0, 50) + '...' : item.url) : '';
