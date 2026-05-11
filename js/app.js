@@ -167,12 +167,12 @@ function showToast(msg) {
 
 // === Load Data from Sheets ===
 
-async function loadFromSheets() {
+async function loadFromSheets(opts) {
   if (!SheetsAPI.isConfigured()) return false;
 
   try {
-    showToast(I18n.t('toast.loadingSheets'));
-    const data = await SheetsAPI.fetchData();
+    showToast(I18n.t((opts && opts.bustCache) ? 'toast.forceSyncing' : 'toast.loadingSheets'));
+    const data = await SheetsAPI.fetchData(null, opts);
     if (data.length === 0) return false;
 
     const items = data.map(normalizeRow);
@@ -427,6 +427,25 @@ async function initApp() {
         return;
       }
       const loaded = await loadFromSheets();
+      if (loaded) {
+        showDataUI();
+        showToast(I18n.t('toast.refreshed'));
+      } else {
+        showToast(I18n.t('toast.refreshFail'));
+      }
+    });
+  }
+
+  // Force sync button (bust cache, flush pending reviews first)
+  const forceSyncBtn = document.getElementById('btn-force-sync');
+  if (forceSyncBtn) {
+    forceSyncBtn.addEventListener('click', async () => {
+      if (!SheetsAPI.isConfigured()) {
+        showToast(I18n.t('toast.notConfigured'));
+        return;
+      }
+      try { await SheetsAPI.flushReviews(); } catch (e) { /* continue */ }
+      const loaded = await loadFromSheets({ bustCache: true });
       if (loaded) {
         showDataUI();
         showToast(I18n.t('toast.refreshed'));

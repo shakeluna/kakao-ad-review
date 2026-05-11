@@ -30,12 +30,16 @@ const SheetsAPI = (() => {
 
   // === HTTP Communication ===
 
-  async function requestGet(params) {
+  async function requestGet(params, opts) {
     const url = Config.APPS_SCRIPT_URL;
     if (!url) throw new Error('Apps Script URL not configured');
 
-    const qs = new URLSearchParams({ ...params, token: Config.SECRET_TOKEN }).toString();
-    const res = await fetch(url + '?' + qs, { redirect: 'follow' });
+    const merged = { ...params, token: Config.SECRET_TOKEN };
+    if (opts && opts.bustCache) merged._ts = Date.now();
+    const qs = new URLSearchParams(merged).toString();
+    const fetchOpts = { redirect: 'follow' };
+    if (opts && opts.bustCache) fetchOpts.cache = 'no-store';
+    const res = await fetch(url + '?' + qs, fetchOpts);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
   }
@@ -56,12 +60,12 @@ const SheetsAPI = (() => {
 
   // === Data Read ===
 
-  async function fetchData(advertiser) {
+  async function fetchData(advertiser, opts) {
     updateStatus('syncing');
     try {
       const params = { action: 'getData' };
       if (advertiser && advertiser !== 'ALL') params.advertiser = advertiser;
-      const result = await requestGet(params);
+      const result = await requestGet(params, opts);
       if (!result.success) throw new Error(result.error);
       updateStatus('connected');
       return result.data;

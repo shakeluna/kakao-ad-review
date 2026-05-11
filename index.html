@@ -48,6 +48,8 @@
   .cache-group { display: flex; align-items: center; gap: 2px; position: relative; }
   .btn-danger { color: #c62828; border-color: #e57373; }
   .btn-danger:hover { background: #ffebee; }
+  .btn-force-sync { color: #1565c0; border-color: #90caf9; font-weight: 600; }
+  .btn-force-sync:hover { background: #e3f2fd; }
   .btn-help {
     width: 20px; height: 20px; padding: 0;
     font-size: 11px; font-weight: 700;
@@ -115,6 +117,7 @@
         <div class="cache-tooltip" id="cache-tooltip"></div>
       </span>
       <button class="btn-icon" id="btn-refresh" title="Sheets에서 새로고침">&#x21bb;</button>
+      <button class="btn-icon btn-force-sync" id="btn-force-sync" title="시트 캐시 무시하고 강제 동기화">&#x1F504; <span data-i18n="btn.forceSync">강제 업데이트</span></button>
       <button class="btn-icon" id="btn-sheets-link" title="Google Sheets 열기">&#x1F4CA;</button>
       <button class="lang-toggle" id="lang-toggle">EN</button>
     </div>
